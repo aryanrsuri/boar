@@ -1,8 +1,10 @@
-/** Boar is a pragmatic language for the productive programmer
+/** 
+ * 
  * [Author] Aryan Suri
  * [Licence] MIT
  * [Copyright] Aryan Suri 2025
- * [Version] (Draft) efe93718559a61933c44aa786083a719c5bf93ea
+ * [Manifest] Boar is a pragmatic language while the productive programmer
+ * 
 **/
 
 /** Notes:
@@ -20,6 +22,7 @@ using std.*;
 // using std.int;
 // using std.float;
 // using std.math;
+// using std.sort;
 // using std.string;
 
 s64 a = 234;
@@ -27,11 +30,13 @@ bool truth = true;
 str b = "432";
 f32 f = 3.55;
 char c = 64;
-u32[] A = [1,2,3];
+u32[3] A = [1,2,3];
+std::vec<u32> V = [1,2,3];
+
 
 std::fmt("%d\n", A[0]);
 type coord = (f32,f32);
-type vec<T> = (T,T,T);
+type Vec3<T> = (T,T,T);
 coord C = (0.0,1.11);
 type number = int;
 
@@ -75,11 +80,12 @@ str msg;
 
 fn try_this(s_int n) result<s_int, err>
 {
+  result<s_int, err> r;
   if (n > 0) {
-    return result<s_int, err>::Ok(n);
+    return r::Ok(n);
   }
   err E = { .code = 10, .msg = "[err] this\n" };
-  return result<s_int, err>::Err(E);
+  return r::Err(E);
 }
     
 
@@ -88,7 +94,7 @@ fn hash(str content) str
 {
   if content.size() > 0 {
     int i = 0;
-    for i < str.size() {
+    while i < str.size() {
       content[i] = i % (64 / str.size()) % 255;
       ++i;
     }
@@ -97,11 +103,11 @@ fn hash(str content) str
   return content;
 }
 
-fn fold(int[] numbers) int
+fn fold(int[10] numbers) int
 {
   int i = 0;
   int sum = 0;
-  for i < numbers.size() {
+  while i < numbers.size() {
     sum += numbers[i];
     ++i;
   }
@@ -109,10 +115,10 @@ fn fold(int[] numbers) int
   return sum;
 }
 
-fn pretty(int[] numbers) nil
+fn pretty(int[10] numbers) nil
 {
   int i = 0;
-  for i < numbers.size() {
+  while i < numbers.size() {
     std::fmt("<%d>, ", numbers[i]);
     ++i;
   }
@@ -121,7 +127,7 @@ fn pretty(int[] numbers) nil
 }
 
 
-fn main(int argv, str[] args) int
+fn main(int argv, str[10] args) int
 {
   if args[0] > 0 {
     std::fmt("[ERR] %d\n", argv);
@@ -130,15 +136,16 @@ fn main(int argv, str[] args) int
   }
 
   commit first_commit = commit::Err(0);
-
-  fun sq(int n) int = n*n;
-  std::fmt("%d\n", sq(10));
-
   match first_commit {
     Hash (s) => std::fmt("%s\n", s),
     Err (n) => std::fmt("%d\n", n),
     nil => std::exit(0),
   }
+
+  fn sq(int n) int { return n*n };
+  std::fmt("%d\n", sq(10));
+
+
 
   return 0;
 }
