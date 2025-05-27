@@ -1,0 +1,113 @@
+/// Boar is a pragmatic language for the productive programmer
+/// Author: Aryan Suri
+/// Licence: MIT
+/// Copyright: Aryan Suri 2025
+/// Charter: Testing file for Boar
+/// Revision: 010
+
+using std.*;
+// using std.int;
+// using std.float;
+// using std.math;
+// using std.string;
+
+s64 a = 234;
+str b = "432";
+float f = 3.55;
+char c = 64;
+u32[] A = [1,2,3];
+
+type number = int;
+
+struct gpu = {
+u32 cmd_fifo;
+u32 cmd_begin;
+u32 cmd_end;
+u8 cmd_char;
+};
+
+struct pair<T,P> = {
+T first;
+P second;
+};
+
+struct shape = {
+int h;
+int w;
+};
+
+enum commit = {
+str Hash;
+int Err;
+nil;
+};
+
+
+fn hash(str content) str
+{
+  int i =0;
+  for i < str.size() {
+    content[i] = i % (64/str.size());
+    ++i;
+  }
+
+  return content;
+}
+
+fn fold(int[] numbers) int
+{
+  int i = 0;
+  int sum = 0;
+  for i < numbers.size() {
+    sum += numbers[i];
+    ++i;
+  }
+
+  return sum;
+}
+
+fn pretty(int[] numbers) nil
+{
+  int i = 0;
+  for i < numbers.size() {
+    std::fmt("<%d>, ", numbers[i]);
+    ++i;
+  }
+
+  return nil;
+}
+
+
+fn main(int argv, str[] args) int
+{
+  if argv != 0 {
+    std::fmt("[ERR] %d\n", argv);
+  } else {
+    std::fmt("[INFO] %d\n", argv);
+  }
+
+
+  commit first_commit;
+  first_commit.Err = 0;
+
+  fun sq(int n) int = n*n;
+  std::fmt("%d\n", sq(10));
+
+  match first_commit {
+    Hash (s) => std::fmt("%s\n", s),
+    Err (n) => std::fmt("%d\n", n),
+    nil => std::exit(0),
+  }
+
+  return 0;
+}
+
+
+
+/** Multi-line comment 
+ * 
+ *  Boar has explicit width data types, 8-128, with a `int` width based on CPU Architecture
+ *  Strings `str` are first class, functionally equivilant to a char[];
+ *
+**/
+
