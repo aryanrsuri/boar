@@ -1,9 +1,20 @@
-/// Boar is a pragmatic language for the productive programmer
-/// Author: Aryan Suri
-/// Licence: MIT
-/// Copyright: Aryan Suri 2025
-/// Charter: Testing file for Boar
-/// Revision: 010
+/** Boar is a pragmatic language for the productive programmer
+ * [Author] Aryan Suri
+ * [Licence] MIT
+ * [Copyright] Aryan Suri 2025
+ * [Version] (Draft) efe93718559a61933c44aa786083a719c5bf93ea
+**/
+
+/** Notes:
+ * 
+ *  Boar has explicit width data types, 8-128, with a `int` width based on CPU Architecture
+ *  Strings `str` are first class, functionally equivilant to a char[], with a begin ptr and length;
+ *            bool := maps to u1 => 0 or 1 
+ *            char := u8
+ *      signed int := s8, s16, s32, s64, s128, u_int (32 or 64 depending on architecture)
+ *    unsigned int := u8, u16, u32, u64, u128, s_int (32 or 64 depending on architecture)
+ *  floating point := f32, f64, float (32 or 64 depending on architecture)
+**/
 
 using std.*;
 // using std.int;
@@ -12,11 +23,16 @@ using std.*;
 // using std.string;
 
 s64 a = 234;
+bool truth = true;
 str b = "432";
-float f = 3.55;
+f32 f = 3.55;
 char c = 64;
 u32[] A = [1,2,3];
 
+std::fmt("%d\n", A[0]);
+type coord = (f32,f32);
+type vec<T> = (T,T,T);
+coord C = (0.0,1.11);
 type number = int;
 
 struct gpu = {
@@ -24,31 +40,58 @@ u32 cmd_fifo;
 u32 cmd_begin;
 u32 cmd_end;
 u8 cmd_char;
-};
+}
 
 struct pair<T,P> = {
 T first;
 P second;
-};
+}
 
 struct shape = {
 int h;
 int w;
-};
+}
 
 enum commit = {
 str Hash;
 int Err;
 nil;
-};
+}
+
+enum option<T> = {
+T Some;
+nil;
+}
+
+enum result<T,E> = {
+T Ok;
+E Err;
+}
+
+struct err = {
+int code;
+str msg;
+}
+
+fn try_this(s_int n) result<s_int, err>
+{
+  if (n > 0) {
+    return result<s_int, err>::Ok(n);
+  }
+  err E = { .code = 10, .msg = "[err] this\n" };
+  return result<s_int, err>::Err(E);
+}
+    
 
 
 fn hash(str content) str
 {
-  int i =0;
-  for i < str.size() {
-    content[i] = i % (64/str.size());
-    ++i;
+  if content.size() > 0 {
+    int i = 0;
+    for i < str.size() {
+      content[i] = i % (64 / str.size()) % 255;
+      ++i;
+    }
   }
 
   return content;
@@ -80,15 +123,13 @@ fn pretty(int[] numbers) nil
 
 fn main(int argv, str[] args) int
 {
-  if argv != 0 {
+  if args[0] > 0 {
     std::fmt("[ERR] %d\n", argv);
   } else {
     std::fmt("[INFO] %d\n", argv);
   }
 
-
-  commit first_commit;
-  first_commit.Err = 0;
+  commit first_commit = commit::Err(0);
 
   fun sq(int n) int = n*n;
   std::fmt("%d\n", sq(10));
@@ -102,12 +143,4 @@ fn main(int argv, str[] args) int
   return 0;
 }
 
-
-
-/** Multi-line comment 
- * 
- *  Boar has explicit width data types, 8-128, with a `int` width based on CPU Architecture
- *  Strings `str` are first class, functionally equivilant to a char[];
- *
-**/
 
