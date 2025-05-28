@@ -33,7 +33,6 @@ pub enum Token {
         Unit,
         RightParen,
         RightArrow,
-        LeftArrow,
         PeriodPeriod,
         ColonColon,
         EqualEqual,
@@ -90,12 +89,6 @@ impl Lexer {
                 lexer
         }
 
-        fn skip_whitespace(&mut self) {
-                while is_whitespace(self.ch) {
-                        self.read();
-                }
-        }
-
         pub fn read(&mut self) {
                 if self.peek >= self.buffer.len() {
                         self.ch = '\0'
@@ -106,13 +99,216 @@ impl Lexer {
                 self.peek += 1;
         }
 
+        pub fn read_peek(&self) -> char {
+            return self.buffer[self.peek]
+        }
+
         pub fn lex(&mut self) -> Token {
             while is_whitespace(self.ch) {self.read();}
-            let token: Token = match self.ch {
-                '\0' => Token::Eof,
-                _ => Token::Identifier(self.ch.to_string()),
-            };
+
+             let token: Token = match self.ch {
+            '=' => {
+                if self.read_peek() == '=' {
+                    self.read();
+                    Token::EqualEqual
+                } else {
+                    Token::Equal
+                }
+            }
+            '!' => {
+                if self.read_peek() == '=' {
+                    self.read();
+                    Token::NotEqual
+                } else {
+                    Token::Bang
+                }
+            }
+            '+' => {
+                if self.read_peek() == '+' {
+                    self.read();
+                    Token::PlusPlus
+                } else {
+                    Token::Plus
+                }
+            }
+            ':' => {
+                if self.read_peek() == ':' {
+                    self.read();
+                    Token::ColonColon
+                } else {
+                    Token::Colon
+                }
+            }
+            '.' => {
+                if self.read_peek() == '.' {
+                    self.read();
+                    Token::PeriodPeriod
+                } else {
+                    Token::Period
+                }
+            }
+            '>' => {
+                if self.read_peek() == '=' {
+                    self.read();
+                    Token::GreaterThanOrEqual
+                } else {
+                    Token::GreaterThan
+                }
+            }
+            '-' => {
+                if self.read_peek() == '>' {
+                    self.read();
+                    Token::RightArrow
+                } else {
+                    Token::Minus
+                }
+            }
+            '<' => {
+                if self.read_peek() == '=' {
+                    self.read();
+                    Token::LessThanOrEqual
+                } else {
+                    Token::LessThan
+                }
+            }
+            '*' => {
+                if self.read_peek() == '*' {
+                    self.read();
+                    Token::AsteriskAsterisk
+                } else {
+                    Token::Asterisk
+                }
+            }
+            '~' => Token::Tilde,
+            '%' => Token::Percent,
+            '?' => Token::QuestionMark,
+            '&' => Token::Ampersand,
+            '^' => Token::Caret,
+            '|' => Token::VerticalBar,
+            '/' => {
+                if self.read_peek() == '*' {
+                    self.read();
+                    return self.read_comment(true);
+                } else if self.read_peek() == '/' {
+                    self.read();
+                    return self.read_comment(false);
+                }
+                Token::ForwardSlash
+            }
+            '{' => Token::LeftBrace,
+            '}' => Token::RightBrace,
+            '[' => Token::LeftBracket,
+            ']' => Token::RightBracket,
+            '(' => Token::LeftParen,
+            ')' => Token::RightParen,
+            ',' => Token::Comma,
+            ';' => Token::SemiColon,
+            '"' => return self.read_string(),
+            '0'..='9' => return self.read_number(),
+            'a'..='z' | 'A'..='Z' => return self.read_identifier(),
+            '\\' => Token::BackwardSlash,
+            '\0' => Token::Eof,
+            _ => Token::Illegal,
+             };
+         self.read();
+         token
+        }
+
+        pub fn read_comment(&mut self, _multiline: bool) -> Token {
             self.read();
-            token
+            let mut result = String::new();
+            while self.ch != '\0' {
+                if self.ch == '\\' {
+                    self.read();
+                    match self.ch {
+                        'n' => result.push('\n'),
+                        't' => result.push('\t'),
+                        'r' => result.push('\r'),
+                        '\\' => result.push('\\'),
+                        '"' => result.push('"'),
+                        _ => result.push(self.ch),
+                    }
+                } else if self.ch == '*' && self.read_peek() == '/' {
+                    self.read();
+                    self.read();
+                    return Token::Comment(String::from(result.trim_start().trim_end()));
+                } else {
+                    result.push(self.ch);
+                }
+                self.read();
+            }
+            Token::Illegal
+        }
+
+        pub fn read_number(&mut self) -> Token {
+            let current = self.curr;
+            while is_numeric(self.ch) {
+                self.read();
+            }
+
+            if self.ch == '.' && is_numeric(self.read_peek()) {
+                self.read();
+                while is_numeric(self.ch) {
+                    self.read();
+                }
+                let literal = self.buffer[current..self.curr].iter().collect::<String>();
+                return Token::Float(literal);
+            }
+
+            Token::Integer(self.buffer[current..self.curr].iter().collect::<String>())
+        }
+
+        pub fn read_string(&mut self) -> Token {
+            self.read();
+            let mut result = String::new();
+            while self.ch != '\0' && self.ch != '"' {
+                if self.ch == '\\' {
+                    self.read();
+                    match self.ch {
+                        'n' => result.push('\n'),
+                        't' => result.push('\t'),
+                        'r' => result.push('\r'),
+                        '\\' => result.push('\\'),
+                        '"' => result.push('"'),
+                        _ => result.push(self.ch),
+                    }
+                } else {
+                    result.push(self.ch);
+                }
+                self.read();
+            }
+
+            if self.ch == '"' {
+                self.read();
+                Token::String(result)
+            } else {
+                Token::Illegal
+            }
+        }
+
+        pub fn read_identifier(&mut self) -> Token {
+            let current = self.curr;
+            loop {
+                if is_alphanumeric(self.ch) {
+                    self.read();
+                } else {
+                    break;
+                }
+            }
+            let ident = self.buffer[current..self.curr].iter().collect::<String>();
+            match ident.as_str() {
+                "fun" => Token::Fun,
+                "fn" => Token::Fn,
+                "if" => Token::If,
+                "else" => Token::Else,
+                "type" => Token::Type,
+                "struct" => Token::Struct,
+                "enum" => Token::Enum,
+                "match" => Token::Match,
+                "return" => Token::Return,
+                "true" => Token::Bool(true),
+                "false" => Token::Bool(false),
+                _ => Token::Identifier(ident),
+            }
         }
 }
