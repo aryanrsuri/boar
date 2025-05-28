@@ -165,7 +165,9 @@ fn main(int argv, str[10] args) int
     nil => std::exit(0),
   }
 
-  fn sq(int n) int { return n*n };
+  // OLD : fn sq(int n) int { return n*n };
+  int fun sq(x) = x*x; 
+  sq->test;
   std::fmt("%d\n", sq(10));
 
 

@@ -2,3 +2,36 @@
   * This test file describes the use of function 
   * 
 **/
+using std.fmt;
+
+
+
+fn b_search(int[_] arr, int n) s_int 
+{
+  // implementation of bsearch
+  return -1;
+}
+
+
+// Every file must contain a `main` function which returns an int 
+fn main () int 
+{
+  // Functions can have functions scoped locally
+  int fun sq(x) = x*x; 
+
+  // Functions can have control flow
+  if sq(2) == 4 {
+    std::fmt("%d\n", 1000);
+  } else {
+    std::fmt("%d\n", -1);
+  }
+
+
+  int[_] A = [1,2,3,4,5];
+
+  return b_search(A, 3);
+}
+
+
+
+  
