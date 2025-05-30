@@ -214,18 +214,18 @@ impl Lexer {
          token
         }
 
-        pub fn read_comment(&mut self, _multiline: bool) -> Token {
+        pub fn read_comment(&mut self, multiline: bool) -> Token {
             self.read();
             let mut result = String::new();
             while self.ch != '\0' {
                 if self.ch == '\\' {
                     self.read();
                     match self.ch {
-                        'n' => result.push('\n'),
                         't' => result.push('\t'),
                         'r' => result.push('\r'),
                         '\\' => result.push('\\'),
                         '"' => result.push('"'),
+                        'n' => result.push('\n'),
                         _ => result.push(self.ch),
                     }
                 } else if self.ch == '*' && self.read_peek() == '/' {
@@ -236,6 +236,9 @@ impl Lexer {
                     result.push(self.ch);
                 }
                 self.read();
+            }
+            if !multiline {
+                return Token::Comment(String::from(result.trim_start().trim_end()))
             }
             Token::Illegal
         }
