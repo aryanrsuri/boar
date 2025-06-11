@@ -1,0 +1,117 @@
+/* Notes:
+ * 
+ *  Kline has explicit width data types
+ *  Strings `str` are first class, functionally equivilant to a char[], with a begin ptr and length
+ *            bool := maps to u1 => 0 or 1
+ *            char := u8
+ *      signed int := s8, s16, s32, s64, s128, int (32 or 64 depending on architecture)
+ *    unsigned int := u8, u16, u32, u64, u128, uint (32 or 64 depending on architecture)
+ *  floating point := f32, f64, float (32 or 64 depending on architecture)
+ */
+
+using std.fmt
+// using std.int
+// using std.float
+// using std.math
+// using std.sort
+// using std.string
+
+
+
+/// Primitive Bindings
+
+const number: u64 = 234
+const tru: bool = true
+const str: string = "432"
+const pi: f32 = 3.1415
+
+// mutable value
+var c: char = 64
+
+/// Collections 
+
+// Array: Fixed length contigous and homogenous list
+var A: [3]u32 = [1,2,3]
+
+// Tuple: Fixed size heterogenous product list
+var T: (u32,u32,char) = (1,1,64)
+
+// Map: finite mapping over one set to another , a mathematical function
+var M: Map<string, u32> = {"hello": 1, "world": 2}
+
+// Vector: Dynamic length contigous collection using SIMD instructions
+var Vc: Vec<u32> = Vec{1,2,3}
+Vc.push(3)
+
+/// Type Composition
+
+// Basic composition
+
+type coord = (f32,f32)
+
+// Alias
+type number = int
+
+// Record type
+struct gpu = {
+cmd_fifo: u32,
+cmd_begin: u32,
+cmd_end: u32,
+cmd_char: u8,
+}
+
+// Polymorphic records
+struct pair<T,P> = {
+first: T,
+second: P,
+}
+
+// Enumerated types
+
+enum commit = {
+fash: str,
+err: int,
+none,
+}
+
+// Polymorphic enums
+enum option<T> = {
+some: T,
+none,
+}
+
+enum result<T,E> = {
+ok: T,
+err: E,
+}
+
+fn realness(n: sint) option<uint> 
+{
+  if n > 0 {
+    // @TODO: Is this a good semantic for enum delcaration?
+    // var real: option<uint> = .{ .some = n }
+    return option.some((uint)n)
+  }
+  return option.none
+}
+
+fn hash(content: string) string
+{
+  if content.size() > 0 {
+    int i = 0
+    for i < content.size() {
+      content[i] = i % 255 
+      i+=1
+    }
+  }
+
+  return content % content.size()
+}
+
+// All functions must return, "void" is equivilant to a unit type in kline
+// This is to prevent side effects and normalise function composition
+fn repr(content: string) ()
+{
+  std.fmt("%s\n", content)
+  return ()
+}

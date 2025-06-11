@@ -1,6 +1,7 @@
-Hog
+Kline
 ====
 
-Hog is a C-style language for the productive programmer
-  * No macros
+Klin is a C-style language for the productive programmer
+        * No Macros
+
   
