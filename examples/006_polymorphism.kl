@@ -1,0 +1,68 @@
+/* 
+ * parametric polymorphism aka `generics`
+ * are instantiated with a normal syntax
+ *
+*/
+
+using std.error;
+
+type pair_tup<T> =(T,T) 
+
+enum Maybe<T> = {
+  Just: T,
+  Nothing
+}
+
+enum Either<E,T> = {
+  Left: E,
+  Right: T
+}
+
+struct pair<T,P> = {
+first: T,
+second: P
+}
+
+struct gpu = {
+st: u32,
+en: u32,
+ch: u8
+}
+
+type r_gpu = Either<gpu,error> 
+
+fn op(opids: [2]u32, opch: u8): r_gpu
+{
+  if opids[0] > opids[1] {
+    return r_gpu.Left(error);
+  }
+  let g: gpu = .{ 
+  .st = opids[0],
+  .en = opids[1],
+  .ch = opch
+  }
+
+  return r_gpu.Right(g);
+}
+
+fn realness(n: s64): Maybe<u64> 
+{
+  if n > 0 {
+    var real: Maybe<u64> = Maybe.Just((uint)n);
+    return real;
+  }
+  return Maybe.Nothing;
+}
+
+fn repr(content: string)
+{
+  fmt.println("%s", content)
+  return;
+}
+
+
+fn main()
+{
+  let r: Maybe<s64> = realness(10);
+  return;
+}

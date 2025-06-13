@@ -1,32 +1,33 @@
-/* Notes:
- * 
- *  Kline has explicit width data types
- *  Strings `str` are first class, functionally equivilant to a char[], with a begin ptr and length
- *            bool := maps to u1 => 0 or 1
- *            char := u8
- *      signed int := s8, s16, s32, s64, s128, int (32 or 64 depending on architecture)
- *    unsigned int := u8, u16, u32, u64, u128, uint (32 or 64 depending on architecture)
- *  floating point := f32, f64, float (32 or 64 depending on architecture)
- */
+/* 
+ * Kline has explicit width data types
+ *           bool := maps to u1 => 0 or 1
+ *           char := u8
+ *     signed int := s8, s16, s32, s64, s128, int (32 or 64 depending on architecture)
+ *   unsigned int := u8, u16, u32, u64, u128, uint (32 or 64 depending on architecture)
+ * floating point := f32, f64, float (32 or 64 depending on architecture)
+ *
+*/
 
 using std.fmt
-// using std.int
-// using std.float
-// using std.math
-// using std.sort
-// using std.string
-
-
+using std.error
 
 /// Primitive Bindings
-
-const number: u64 = 234
-const tru: bool = true
-const str: string = "432"
-const pi: f32 = 3.1415
-
+let number: u64 = 234
+let tru: bool = true
+let str: string = "432"
+let pi: f32 = 3.1415
 // mutable value
+
 var c: char = 64
+
+/// Type Composition
+ 
+// Defining a 2-len tuple of f32 
+type coord = (f32,f32)
+
+// Alias
+type number = int
+
 
 /// Collections 
 
@@ -34,25 +35,17 @@ var c: char = 64
 var A: [3]u32 = [1,2,3]
 
 // Tuple: Fixed size heterogenous product list
-var T: (u32,u32,char) = (1,1,64)
+ T: Tup<u32,u32,char> = (1,1,64)
 
 // Map: finite mapping over one set to another , a mathematical function
-var M: Map<string, u32> = {"hello": 1, "world": 2}
+var M: Map<string, u32> = Map{"hello": 1, "world": 2}
 
 // Vector: Dynamic length contigous collection using SIMD instructions
 var Vc: Vec<u32> = Vec{1,2,3}
 Vc.push(3)
 
-/// Type Composition
+// Record: Fixed size hetergenous product list keyed by a `field`
 
-// Basic composition
-
-type coord = (f32,f32)
-
-// Alias
-type number = int
-
-// Record type
 struct gpu = {
 cmd_fifo: u32,
 cmd_begin: u32,
@@ -61,41 +54,54 @@ cmd_char: u8,
 }
 
 // Polymorphic records
+
 struct pair<T,P> = {
 first: T,
 second: P,
 }
 
-// Enumerated types
-
-enum commit = {
-fash: str,
-err: int,
-none,
+// Enumerated type Hashable = {
+Hash: string,
+Err: string,
 }
 
 // Polymorphic enums
-enum option<T> = {
-some: T,
-none,
+enum Maybe<T> = {
+Just: T,
+Nothing,
 }
 
-enum result<T,E> = {
-ok: T,
-err: E,
+enum Either<E,T> = {
+Left: E,
+Right: T,
 }
 
-fn realness(n: sint) option<uint> 
+
+type r_gpu = Either<gpu,error> 
+fn op(opids: (u32,u32,u32,u8)): r_gpu
+{
+  if opids.1 > opids.2 {
+    return r_gpu.Left(error.InvalidOperation)
+  }
+  let g: gpu = .{ 
+  .cmd_fifo = opids.1,
+  .cmd_begin = opids.2, 
+  .cmd_end = opids.3, 
+  .cmd_char = opids.4 
+  }
+  return r_gpu.Right(g)
+}
+
+fn realness(n: sint): Maybe<uint> 
 {
   if n > 0 {
-    // @TODO: Is this a good semantic for enum delcaration?
-    // var real: option<uint> = .{ .some = n }
-    return option.some((uint)n)
+    var real: Maybe<uint> = Maybe<uint>.Just(n)
+    return Maybe.Just((uint)n)
   }
-  return option.none
+  return Maybe.Nothing
 }
 
-fn hash(content: string) string
+fn hash(content: string): Hashable
 {
   if content.size() > 0 {
     int i = 0
@@ -103,15 +109,13 @@ fn hash(content: string) string
       content[i] = i % 255 
       i+=1
     }
-  }
-
-  return content % content.size()
+    return Hashable.Hash(content)
+  } 
+  return Hashable.Err("Null content length")
 }
 
-// All functions must return, "void" is equivilant to a unit type in kline
-// This is to prevent side effects and normalise function composition
-fn repr(content: string) ()
+fn repr(content: string): ()
 {
-  std.fmt("%s\n", content)
+  fmt.println("%s", content)
   return ()
 }

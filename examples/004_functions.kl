@@ -1,0 +1,12 @@
+fn hash(content: string): string
+{
+  if size(content) > 0 {
+    var i: u64 = 0;
+    for i < size(content) {
+      content[i] = i % 255;
+      i += 1;
+    }
+    return content
+  }
+  return ""
+} 

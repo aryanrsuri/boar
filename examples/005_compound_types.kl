@@ -1,0 +1,38 @@
+using std.fmt;
+
+
+type coord = (f32,f32)
+
+enum Status = {
+  Pending,
+  Running,
+  Closed,
+  Nothing
+}
+
+struct person = {
+  name: string,
+  age: u32,
+  where: coord,
+  parent_coords: [2]coord,
+  job_state: Status
+}
+
+
+fn main() {
+  let c: coord = (23.22, 11.1);
+  let pc: [2]coord = [(23.11,11.1), (10.11,11.1)];
+  var cc: coord = pc[0];
+
+  let s: Status = Status.Pending;
+
+  var p: person = .{
+  .name = "Jogn",
+  .age  = 10,
+  .where = c,
+  .parent_coords = pc,
+  .job_state = s,
+  };
+  
+  return;
+}

@@ -1,0 +1,11 @@
+fn main()
+{
+  let x: u32 = 100;
+  let y: bool = false;
+  let str: string = "Hello World";
+  let pi: f32 = 3.1415;
+
+  let c: char = 'A';
+
+  return;
+}

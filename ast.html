@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kline AST</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Menlo', monospace;
+            padding: 20px;
+        }
+        details {
+            border-left: 1px solid #444;
+            padding-left: 20px;
+            margin-left: 15px;
+        }
+        summary {
+            cursor: pointer;
+            padding: 2px;
+            outline: none;
+        }
+        summary:hover {
+            background-color: #333;
+        }
+        .details-content {
+            padding-top: 5px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        li {
+            margin: 2px 0;
+        }
+        .node-type {
+            color: #4ec9b0; /* Teal */
+            font-weight: bold;
+        }
+        .keyword {
+            color: #c586c0; /* Purple */
+        }
+        .identifier {
+            color: #9cdcfe; /* Light Blue */
+        }
+        .literal {
+            color: #b5cea8; /* Green */
+        }
+        .type {
+            color: #4ec9b0; /* Teal */
+        }
+        .operator {
+            color: #d4d4d4;
+        }
+        .none {
+            color: #888;
+            font-style: italic;
+        }
+        .unhandled {
+            color: #f44747; /* Red */
+            border: 1px solid #f44747;
+            padding: 2px;
+        }
+    </style>
+</head>
+<body>
+    <details><summary><span class="node-type">Program</span></summary><div class="details-content"><ul><li><span class="keyword">using</span> <span class="identifier">std</span><span class="operator">.</span><span class="identifier">error</span></li><li><details><summary><span class="keyword">type</span> <span class="identifier">pair_tup</span> =</summary><div class="details-content">(<span class="type"><span class="identifier">T</span></span>, <span class="type"><span class="identifier">T</span></span>)</div></details></li><li><details><summary><span class="keyword">enum</span> <span class="identifier">Maybe</span> =</summary><div class="details-content"><ul><li><span class="identifier">Just</span>: <span class="type"><span class="identifier">T</span></span></li><li><span class="identifier">Nothing</span></li></ul></div></details></li><li><details><summary><span class="keyword">enum</span> <span class="identifier">Either</span> =</summary><div class="details-content"><ul><li><span class="identifier">Left</span>: <span class="type"><span class="identifier">E</span></span></li><li><span class="identifier">Right</span>: <span class="type"><span class="identifier">T</span></span></li></ul></div></details></li><li><details><summary><span class="keyword">struct</span> <span class="identifier">pair</span> =</summary><div class="details-content"><ul><li><span class="identifier">first</span>: <span class="type"><span class="identifier">T</span></span></li><li><span class="identifier">second</span>: <span class="type"><span class="identifier">P</span></span></li></ul></div></details></li><li><details><summary><span class="keyword">struct</span> <span class="identifier">gpu</span> =</summary><div class="details-content"><ul><li><span class="identifier">st</span>: <span class="type"><span class="identifier">u32</span></span></li><li><span class="identifier">en</span>: <span class="type"><span class="identifier">u32</span></span></li><li><span class="identifier">ch</span>: <span class="type"><span class="identifier">u8</span></span></li></ul></div></details></li><li><details><summary><span class="keyword">type</span> <span class="identifier">r_gpu</span> =</summary><div class="details-content"><span class="type"><span class="identifier">Either</span></span><<span class="type"><span class="identifier">gpu</span></span>, <span class="type"><span class="identifier">error</span></span>></div></details></li><li><details><summary><span class="keyword">fn</span> <span class="identifier">op</span> <ul><li><span class="identifier">opids</span>: [<span class="literal">2</span>] <span class="type"><span class="identifier">u32</span></span></li><li><span class="identifier">opch</span>: <span class="type"><span class="identifier">u8</span></span></li></ul> -> <span class="type"><span class="identifier">r_gpu</span></span></summary><div class="details-content"><details><summary><span class="node-type">Block</span></summary><div class="details-content"><ul><li><details><summary><span class="node-type">ExpressionStatement</span></summary><div class="details-content"><details><summary><span class="keyword">if</span> (<span class="unhandled">Unhandled Expr: Index(IndexExpression { object: Identifier(Identifier("opids")), index: Integer(0) })</span> <span class="operator">></span> <span class="unhandled">Unhandled Expr: Index(IndexExpression { object: Identifier(Identifier("opids")), index: Integer(1) })</span>)</summary><div class="details-content"><h4>Consequence</h4><div class="details-content"><ul><li><details><summary><span class="keyword">return</span></summary><div class="details-content"><details><summary>Call <span class="identifier">r_gpu</span><span class="operator">.</span><span class="identifier">Left</span></summary><div class="details-content"><ul><li><span class="identifier">error</span></li></ul></div></details></div></details></li></ul></div></div></details></div></details></li><li><details><summary><span class="keyword">let</span> <span class="identifier">g</span>: <span class="type"><span class="identifier">gpu</span></span></summary><div class="details-content"><span class="unhandled">Unhandled Expr: Struct(StructLiteral { type_path: None, fields: [(Identifier("st"), Index(IndexExpression { object: Identifier(Identifier("opids")), index: Integer(0) })), (Identifier("en"), Index(IndexExpression { object: Identifier(Identifier("opids")), index: Integer(1) })), (Identifier("ch"), Identifier(Identifier("opch")))] })</span></div></details></li><li><details><summary><span class="keyword">return</span></summary><div class="details-content"><details><summary>Call <span class="identifier">r_gpu</span><span class="operator">.</span><span class="identifier">Right</span></summary><div class="details-content"><ul><li><span class="identifier">g</span></li></ul></div></details></div></details></li></ul></div></details></div></details></li><li><details><summary><span class="keyword">fn</span> <span class="identifier">realness</span> <ul><li><span class="identifier">n</span>: <span class="type"><span class="identifier">s64</span></span></li></ul> -> <span class="type"><span class="identifier">Maybe</span></span><<span class="type"><span class="identifier">u64</span></span>></summary><div class="details-content"><details><summary><span class="node-type">Block</span></summary><div class="details-content"><ul><li><details><summary><span class="node-type">ExpressionStatement</span></summary><div class="details-content"><details><summary><span class="keyword">if</span> (<span class="identifier">n</span> <span class="operator">></span> <span class="literal">0</span>)</summary><div class="details-content"><h4>Consequence</h4><div class="details-content"><ul><li><details><summary><span class="keyword">var</span> <span class="identifier">real</span>: <span class="type"><span class="identifier">Maybe</span></span><<span class="type"><span class="identifier">u64</span></span>></summary><div class="details-content"><details><summary>Call <span class="identifier">Maybe</span><span class="operator">.</span><span class="identifier">Just</span></summary><div class="details-content"><ul><li><span class="unhandled">Unhandled Expr: Cast(CastExpression { target_type: Identifier(Identifier("uint")), expression: Identifier(Identifier("n")) })</span></li></ul></div></details></div></details></li><li><details><summary><span class="keyword">return</span></summary><div class="details-content"><span class="identifier">real</span></div></details></li></ul></div></div></details></div></details></li><li><details><summary><span class="keyword">return</span></summary><div class="details-content"><span class="identifier">Maybe</span><span class="operator">.</span><span class="identifier">Nothing</span></div></details></li></ul></div></details></div></details></li><li><details><summary><span class="keyword">fn</span> <span class="identifier">repr</span> <ul><li><span class="identifier">content</span>: <span class="type"><span class="identifier">string</span></span></li></ul> -> ()</summary><div class="details-content"><details><summary><span class="node-type">Block</span></summary><div class="details-content"><ul><li><details><summary><span class="node-type">ExpressionStatement</span></summary><div class="details-content"><details><summary>Call <span class="identifier">fmt</span><span class="operator">.</span><span class="identifier">println</span></summary><div class="details-content"><ul><li><span class="literal">"%s"</span></li><li><span class="identifier">content</span></li></ul></div></details></div></details></li><li><details><summary><span class="keyword">return</span></summary><div class="details-content"><span class="none">None</span></div></details></li></ul></div></details></div></details></li><li><details><summary><span class="keyword">fn</span> <span class="identifier">main</span>  -> ()</summary><div class="details-content"><details><summary><span class="node-type">Block</span></summary><div class="details-content"><ul><li><details><summary><span class="keyword">let</span> <span class="identifier">r</span>: <span class="type"><span class="identifier">Maybe</span></span><<span class="type"><span class="identifier">s64</span></span>></summary><div class="details-content"><details><summary>Call <span class="identifier">realness</span></summary><div class="details-content"><ul><li><span class="literal">10</span></li></ul></div></details></div></details></li><li><details><summary><span class="keyword">return</span></summary><div class="details-content"><span class="none">None</span></div></details></li></ul></div></details></div></details></li></ul></div></details>
+</body>
+</html>
