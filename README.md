@@ -1,4 +1,4 @@
-Kline (.kl)
+## Kline (.kl)
 
 Is a declarative and reasonably opionated language for the productive
 developer
@@ -9,6 +9,7 @@ It has:
 - Emphasis on algebraic data types as core data carriers
 - No classes – methods can reference structs as a reciever
 
+```c
     /* 
      * parametric polymorphism aka `generics`
      * are instantiated with a normal syntax
@@ -77,3 +78,4 @@ It has:
       let r: Maybe<s64> = realness(10);
       return;
     }
+```
