@@ -31,7 +31,7 @@ fn main() {
   .age  = 10,
   .where = c,
   .parent_coords = pc,
-  .job_state = s,
+  .job_state = s
   };
   
   return;

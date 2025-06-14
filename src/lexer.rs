@@ -118,6 +118,42 @@ impl Lexer {
             self.read();
         }
 
+        loop {
+            while is_whitespace(self.ch) {
+                self.read();
+            }
+
+            // Check for single-line comments
+            if self.ch == '/' && self.read_peek() == '/' {
+                // Consume until the end of the line
+                while self.ch != '\n' && self.ch != '\0' {
+                    self.read();
+                }
+                // Continue the loop to find the next token after the comment
+                continue;
+            }
+
+            // Check for multi-line comments
+            if self.ch == '/' && self.read_peek() == '*' {
+                // Your existing multi-line comment logic is fine,
+                // but should also be skipped in the same way.
+                // For simplicity, we'll assume it's also skipped.
+                // A simple skip:
+                self.read(); // consume /
+                self.read(); // consume *
+                while !(self.ch == '*' && self.read_peek() == '/') && self.ch != '\0' {
+                    self.read();
+                }
+                if self.ch != '\0' {
+                    self.read(); // consume *
+                    self.read(); // consume /
+                }
+                continue;
+            }
+            
+            break;
+        }
+
         let token: Token = match self.ch {
             '=' => {
                 if self.read_peek() == '=' {

@@ -1,0 +1,36 @@
+using std.fmt;
+using std.Maybe;
+
+
+struct person = {
+age: u32,
+male: bool,
+name: string,
+siblings: Maybe<Map<string, person>>
+}
+
+fn new_person(age: u32, male: bool, name: string): person
+{
+  var p: person = .{
+  .age = age,
+  .male = male,
+  .name = name,
+  .siblings = Maybe.Nothing
+  };
+
+  return p;
+}
+
+fn get_name(p: &person): string
+{
+  return p.name;
+}
+
+
+fn main()
+{
+  let ar: person = new_person(10, true, "Aryan");
+  fmt.printf("%s\n", ar.get_name());
+
+  return;
+}

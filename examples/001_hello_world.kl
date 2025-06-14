@@ -1,5 +1,6 @@
 using std.fmt;
 
+// Prints hello world
 fn main() {
   fmt.printf("Hello World\n");
 }

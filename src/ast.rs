@@ -128,6 +128,7 @@ pub struct EnumVariant {
 // Represents all possible expressions in the language.
 #[derive(Debug, PartialEq, Clone)]
 pub enum Expression {
+    AddressOf(Box<Expression>),
     Identifier(Identifier),
     Path(Path), // For `std.fmt` or enum variants like `Maybe.Just`
 
@@ -163,6 +164,7 @@ pub enum Expression {
 // Represents all possible type annotations.
 #[derive(Debug, PartialEq, Clone)]
 pub enum Type {
+    Reference(Box<Type>),
     Identifier(Identifier), // `u32`, `string`, `T`
     Tuple(Vec<Type>),       // `(f32, f32)`
     Array { size: Box<Expression>, element_type: Box<Type> }, // `[3]u32`

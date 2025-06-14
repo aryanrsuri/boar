@@ -315,7 +315,7 @@ impl Parser {
         if !self.expect_peek(Token::Equal) { return Err(()); }
         if !self.expect_peek(Token::LeftBrace) { return Err(()); }
         
-        let fields = self.parse_delimited_list(Token::RightBrace, Self::parse_struct_field)?;
+        let fields = self.parse_delimited_list(Token::LeftBrace, Token::RightBrace, Self::parse_struct_field)?;
         Ok(StructDeclaration { name, generic_params, fields })
     }
 
@@ -338,7 +338,7 @@ impl Parser {
         if !self.expect_peek(Token::Equal) { return Err(()); }
         if !self.expect_peek(Token::LeftBrace) { return Err(()); }
 
-        let variants = self.parse_delimited_list(Token::RightBrace, Self::parse_enum_variant)?;
+        let variants = self.parse_delimited_list(Token::LeftBrace, Token::RightBrace, Self::parse_enum_variant)?;
         Ok(EnumDeclaration { name, generic_params, variants })
     }
 
@@ -388,6 +388,11 @@ impl Parser {
                 let element_type = self.parse_type()?;
                 Ok(Type::Array { size: Box::new(size), element_type: Box::new(element_type) })
             }
+            Token::Ampersand => {
+                self.next_token();
+                let inner_type = self.parse_type()?;
+                Ok(Type::Reference(Box::new(inner_type)))
+            },
             _ => {
                 self.errors.push(format!("expected a type, found {:?}", self.curr));
                 Err(())
@@ -417,6 +422,11 @@ impl Parser {
                 } else {
                     self.parse_identifier_or_path_expression()
                 }
+            },
+            Token::Ampersand => {
+                self.next_token();
+                let expr = self.parse_expression(Precedence::Prefix)?;
+                Ok(Expression::AddressOf(Box::new(expr)))
             },
             Token::Integer(val) => val.parse::<i64>().map(Expression::Integer).map_err(|_| self.errors.push("failed to parse integer".into())),
             Token::Float(val) => val.parse::<f64>().map(Expression::Float).map_err(|_| self.errors.push("failed to parse float".into())),
@@ -686,7 +696,7 @@ impl Parser {
         };
 
         if !self.expect_peek(Token::LeftBrace) { return Err(()); }
-        let fields = self.parse_delimited_list(Token::RightBrace, Self::parse_struct_literal_field)?;
+        let fields = self.parse_delimited_list(Token::LeftBrace, Token::RightBrace, Self::parse_struct_literal_field)?;
         Ok(Expression::Struct(StructLiteral { type_path, fields }))
     }
 
@@ -705,7 +715,7 @@ impl Parser {
         Ok((name, value))
     }
 
-    fn parse_call_expression(&mut self, function: Expression) -> Result<Expression, ()> {
+    /*fn parse_call_expression(&mut self, function: Expression) -> Result<Expression, ()> {
         self.next_token(); // consume '('
         let arguments = self.parse_comma_separated(Self::parse_expression_with_lowest_precedence)?;
         if !self.expect_peek(Token::RightParen) { return Err(()); }
@@ -714,6 +724,18 @@ impl Parser {
             return Err(())
         }
         Ok(Expression::Call(CallExpression { function: Box::new(function), arguments }))
+    }*/
+    fn parse_call_expression(&mut self, function: Expression) -> Result<Expression, ()> {
+        let arguments = self.parse_delimited_list(
+            Token::LeftParen, 
+            Token::RightParen, 
+            Self::parse_expression_with_lowest_precedence
+        )?;
+
+        Ok(Expression::Call(CallExpression { 
+            function: Box::new(function), 
+            arguments 
+        }))
     }
     
     fn parse_index_expression(&mut self, object: Expression) -> Result<Expression, ()> {
@@ -795,44 +817,41 @@ impl Parser {
 
     fn parse_delimited_list<T, F>(
         &mut self,
+        start_token: Token,
         end_token: Token,
         mut parse_fn: F,
     ) -> Result<Vec<T>, ()>
     where
         F: FnMut(&mut Self) -> Result<T, ()>,
     {
-        let mut items = Vec::new();
-
-        // Check for an empty list, e.g., `{}`
-        if self.peek == end_token {
-            self.next_token(); // consume the end token
-            return Ok(items);
-        }
-
-        self.next_token(); // consume the opening delimiter
-
-        // Parse the first item
-        items.push(parse_fn(self)?);
-
-        // Parse subsequent items
-        while self.peek == Token::Comma {
-            self.next_token(); // consume the item
-            self.next_token(); // consume the comma
-
-            // If we're at the end token, it was a trailing comma
-            if self.curr == end_token {
-                break;
-            }
-            
-            items.push(parse_fn(self)?);
-        }
-
-        // After the loop, the next token MUST be the end token
-        if !self.expect_peek(end_token.clone()) {
-            self.errors.push(format!("expected token {:?} to close list", end_token));
+        if self.curr != start_token {
+            self.errors.push(format!("expected list to start with {:?}", start_token));
             return Err(());
         }
 
+        let mut items = Vec::new();
+
+        if self.peek == end_token {
+            self.next_token(); // consume end_token
+            return Ok(items);
+        }
+
+        self.next_token(); // consume start_token
+
+        loop {
+            items.push(parse_fn(self)?);
+            if self.peek != Token::Comma {
+                break;
+            }
+            self.next_token(); // consume item
+            self.next_token(); // consume comma
+        }
+        
+        if !self.expect_peek(end_token.clone()) {
+             self.errors.push(format!("expected token {:?} to close list", end_token));
+             return Err(());
+        }
+        
         Ok(items)
     }
 }

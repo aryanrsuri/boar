@@ -1,12 +1,13 @@
 fn hash(content: string): string
 {
-  if size(content) > 0 {
+  if content.size() > 0 {
     var i: u64 = 0;
-    for i < size(content) {
+    for i < content.size() {
       content[i] = i % 255;
       i += 1;
     }
     return content
-  }
+  } else {
   return ""
+  }
 } 
